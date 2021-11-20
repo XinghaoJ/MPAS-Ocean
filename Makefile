@@ -365,6 +365,32 @@ gfortran-clang:
 	"OPENMP = $(OPENMP)" \
 	"CPPFLAGS = $(MODEL_FORMULATION) -D_MPI" )
 
+gfortran-clang-aarch64:
+	( $(MAKE) all \
+	"FC_PARALLEL = mpif90" \
+	"CC_PARALLEL = mpicc -cc=clang" \
+	"CXX_PARALLEL = mpicxx -cxx=clang++" \
+	"FC_SERIAL = gfortran" \
+	"CC_SERIAL = clang" \
+	"CXX_SERIAL = clang++" \
+	"FFLAGS_PROMOTION = -fdefault-real-8 -fdefault-double-8" \
+	"FFLAGS_OPT = -O3 -march=armv8.5-a -ffree-line-length-none -fconvert=big-endian -ffree-form -w -fallow-argument-mismatch" \
+	"CFLAGS_OPT = -O3 -march=armv8.5-a" \
+	"CXXFLAGS_OPT = -O3 -march=armv8.5-a" \
+	"LDFLAGS_OPT = -O3 -march=armv8.5-a" \
+	"FFLAGS_DEBUG = -g -march=armv8.5-a -ffree-line-length-none -fconvert=big-endian -ffree-form -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow" \
+	"CFLAGS_DEBUG = -g -march=armv8.5-a" \
+	"CXXFLAGS_DEBUG = -g -march=armv8.5-a" \
+	"LDFLAGS_DEBUG = -g -march=armv8.5-a" \
+	"FFLAGS_OMP = -fopenmp" \
+	"CFLAGS_OMP = -fopenmp" \
+	"BUILD_TARGET = $(@)" \
+	"CORE = $(CORE)" \
+	"DEBUG = $(DEBUG)" \
+	"USE_PAPI = $(USE_PAPI)" \
+	"OPENMP = $(OPENMP)" \
+	"CPPFLAGS = $(MODEL_FORMULATION) -D_MPI" )
+
 g95:
 	( $(MAKE) all \
 	"FC_PARALLEL = mpif90" \
