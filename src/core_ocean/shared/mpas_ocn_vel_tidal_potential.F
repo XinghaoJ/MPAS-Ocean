@@ -10,7 +10,7 @@
 !  ocn_vel_tidal_potential
 !
 !> \brief MPAS ocean tidal potential forcing module
-!> \author Steven Brus 
+!> \author Steven Brus
 !> \date   September 2019
 !> \details
 !>  This module contains routines for the tidal potential forcing.
@@ -67,7 +67,7 @@ module ocn_vel_tidal_potential
       betaSelfAttrLoad,  &! self-attraction and loading beta
       tidalPotRamp        ! scale for ramping tidal potential
 
-   !*** eventually these will be private module arrays and 
+   !*** eventually these will be private module arrays and
    !*** not in the forcing pool so retain pointers here as placeholders
    real (kind=RKIND), dimension(:), pointer :: &
       tidalPotEta,                    &!
@@ -79,7 +79,7 @@ module ocn_vel_tidal_potential
       tidalConstituentNodalPhase       !
 
    real (kind=RKIND), dimension(:,:), pointer :: &
-      latitudeFunction 
+      latitudeFunction
 
    integer, dimension(:), pointer :: &
       tidalConstituentType
@@ -188,12 +188,12 @@ contains
 !
 !  routine ocn_compute_tidal_potential_forcing
 !
-!> \brief   Computes equilibrium tidal potential 
+!> \brief   Computes equilibrium tidal potential
 !> \author  Steven Brus
 !> \date    September 2019
 !> \details
-!>  This routine computes the equilibrium tidal potential due to all 
-!>  tidal constituents 
+!>  This routine computes the equilibrium tidal potential due to all
+!>  tidal constituents
 !
 !-----------------------------------------------------------------------
 
@@ -257,7 +257,7 @@ contains
                               * latitudeFunction(iCell,conType+1) &
                               * cos(tArg  + real(conType,RKIND)*lon)
          end do
-        
+
       end do
 
    end subroutine ocn_compute_tidal_potential_forcing!}}}
@@ -271,7 +271,7 @@ contains
 !> \author  Steven Brus
 !> \date    September 2019
 !> \details
-!>  This routine initializes the ocean tidal potential forcing module 
+!>  This routine initializes the ocean tidal potential forcing module
 !>  and variables.
 !
 !-----------------------------------------------------------------------
@@ -304,7 +304,7 @@ contains
          lat                ! latitude temporary
 
       ! pointers for pool variables
-      type (block_type), pointer :: block_ptr 
+      type (block_type), pointer :: block_ptr
       type (mpas_pool_type), pointer :: forcingPool
       type (mpas_pool_type), pointer :: meshPool
       integer, pointer :: nCells
@@ -320,7 +320,7 @@ contains
       tidalPotentialOff = .true.
       betaSelfAttrLoad  = 0.0_RKIND
       tidalPotRamp      = 1.0e20_RKIND
- 
+
       !*** If tidal potential turned on, set all relevant variables
 
       if (config_use_tidal_potential_forcing) then
@@ -352,7 +352,7 @@ contains
                             'nTidalPotentialConstituents', &
                              nTidalPotentialConstituents)
          call mpas_pool_get_array(forcingPool, &
-                            'tidalPotentialConstituentAmplitude', & 
+                            'tidalPotentialConstituentAmplitude', &
                              tidalConstituentAmplitude)
          call mpas_pool_get_array(forcingPool, &
                             'tidalPotentialConstituentFrequency', &
@@ -387,42 +387,42 @@ contains
          if (config_use_tidal_potential_forcing_M2) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'M2'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_S2) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'S2'
-         end if 
- 
+         end if
+
          if (config_use_tidal_potential_forcing_N2) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'N2'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_K2) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'K2'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_K1) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'K1'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_O1) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'O1'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_Q1) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'Q1'
-         end if 
+         end if
 
          if (config_use_tidal_potential_forcing_P1) then
             nTidalConstituents = nTidalConstituents + 1
             constituentList(nTidalConstituents)%constituent = 'P1'
-         end if 
+         end if
 
          ! set point value in forcing pool just in case
          nTidalPotentialConstituents = nTidalConstituents
@@ -440,11 +440,11 @@ contains
 
          do iCell = 1,nCells
             lat = latCell(iCell)
-            latitudeFunction(iCell,1) = 3.0_RKIND*sin(lat)**2 -1.0_RKIND 
+            latitudeFunction(iCell,1) = 3.0_RKIND*sin(lat)**2 -1.0_RKIND
             latitudeFunction(iCell,2) = sin(2.0_RKIND*lat)
             latitudeFunction(iCell,3) = cos(lat)**2
          end do
-        
+
          do iCon = 1,nTidalConstituents
             call mpas_log_write( &
                  'Constituent '//constituentList(iCon)%constituent)
@@ -476,11 +476,11 @@ contains
 !
 !  routine tidal_constituent_factors
 !
-!> \brief   Initialized tidal constituent factors 
+!> \brief   Initialized tidal constituent factors
 !> \author  Steven Brus
 !> \date    September 2019
 !> \details
-!>  This routine initializes the amplitude, frequency, love numbers, 
+!>  This routine initializes the amplitude, frequency, love numbers,
 !>  astronomical argument and nodal factors for each tidal constituent
 !>  Nodal factor equations are from:
 !>         "Manual of Harmonic Analysis and Prediction of Tides"
@@ -539,11 +539,11 @@ contains
       !p = 83.3535_RKIND + 0.11140353_RKIND*T;
       !N = 125.0445_RKIND - 0.05295377_RKIND*T;
       !N = N*pii/180.0_RKIND
-      
+
       !! M2
-          !tidalConstituentAstronomical(j) = 2.0_RKIND*h - 2.0_RKIND*s 
+          !tidalConstituentAstronomical(j) = 2.0_RKIND*h - 2.0_RKIND*s
           !tidalConstituentNodalPhase(j) = -2.1_RKIND*sin(N)
-          !tidalConstituentNodalAmplitude(j) = 1.0_RKIND - 0.037_RKIND*cos(N) 
+          !tidalConstituentNodalAmplitude(j) = 1.0_RKIND - 0.037_RKIND*cos(N)
 
       !! S2
           !tidalConstituentAstronomical(j) = 0.0_RKIND
@@ -561,7 +561,7 @@ contains
           !tidalConstituentNodalAmplitude(j) = 1.006_RKIND + 0.115_RKIND*cos(N)
 
       !! O1
-          !tidalConstituentAstronomical(j) = h - 2.0_RKIND*s - 90.0_RKIND 
+          !tidalConstituentAstronomical(j) = h - 2.0_RKIND*s - 90.0_RKIND
           !tidalConstituentNodalPhase(j) = 10.8_RKIND*sin(N)
           !tidalConstituentNodalAmplitude(j) = 1.009_RKIND + 0.187_RKIND*cos(N)
 
@@ -574,7 +574,7 @@ contains
           tidalConstituentAmplitude(j) = 0.242334_RKIND
           tidalConstituentFrequency(j) = 1.405189e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.693_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = cos(0.5_RKIND*I*deg2rad)**4/0.91544_RKIND
           tidalConstituentNodalPhase(j) = 2.0_RKIND*(T-s+h) + 2.0_RKIND*(xi-nu)
           tidalConstituentType(j) = 2
@@ -583,7 +583,7 @@ contains
           tidalConstituentAmplitude(j) = 0.112743_RKIND
           tidalConstituentFrequency(j) = 1.454441e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.693_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = 1.0_RKIND
           tidalConstituentNodalPhase(j) = 2.0_RKIND*T
           tidalConstituentType(j) = 2
@@ -592,27 +592,27 @@ contains
           tidalConstituentAmplitude(j) = 0.046397_RKIND
           tidalConstituentFrequency(j) = 1.378797e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.693_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = cos(0.5_RKIND*I*deg2rad)**4/0.91544_RKIND
           tidalConstituentNodalPhase(j) = 2.0_RKIND*(T+h) - 3.0_RKIND*s+p + 2.0_RKIND*(xi-nu)
           tidalConstituentType(j) = 2
 
         else if (constituentList(j)%constituent == 'K2') then
-          tidalConstituentAmplitude(j) = 0.030684_RKIND 
+          tidalConstituentAmplitude(j) = 0.030684_RKIND
           tidalConstituentFrequency(j) = 1.458423e-4_RKIND
-          tidalConstituentLoveNumbers(j) = 0.693_RKIND 
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentLoveNumbers(j) = 0.693_RKIND
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = 0.001_RKIND+sqrt(19.0444_RKIND*sin(I*deg2rad)**4 + &
                                                                2.7702_RKIND*sin(I*deg2rad)**2*cos(2.0_RKIND*nu*deg2rad) + &
-                                                               0.0981_RKIND) 
-          tidalConstituentNodalPhase(j) = 2.0_RKIND*(T+h) - 2.0_RKIND*nup2 
+                                                               0.0981_RKIND)
+          tidalConstituentNodalPhase(j) = 2.0_RKIND*(T+h) - 2.0_RKIND*nup2
           tidalConstituentType(j) = 2
 
         else if (constituentList(j)%constituent == 'K1') then
           tidalConstituentAmplitude(j) = 0.141565_RKIND
           tidalConstituentFrequency(j) = 0.7292117e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.736_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = sqrt(0.8965_RKIND*sin(2.0_RKIND*I*deg2rad)**2 + &
                                                    0.6001_RKIND*sin(2.0_RKIND*I*deg2rad) * &
                                                    cos(nu*deg2rad) + 0.1006_RKIND)
@@ -623,27 +623,27 @@ contains
           tidalConstituentAmplitude(j) = 0.100661_RKIND
           tidalConstituentFrequency(j) = 0.6759774e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.695_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = sin(I*deg2rad)*cos(0.5_RKIND*I*deg2rad)**2/0.37988_RKIND
           tidalConstituentNodalPhase(j) = T - 2.0_RKIND*s + h + 90.0_RKIND + 2.0_RKIND*xi - nu
           tidalConstituentType(j) = 1
 
         else if (constituentList(j)%constituent == 'Q1') then
-          tidalConstituentAmplitude(j) = 0.019273_RKIND 
+          tidalConstituentAmplitude(j) = 0.019273_RKIND
           tidalConstituentFrequency(j) = 0.6495854e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.695_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
           tidalConstituentNodalAmplitude(j) = sin(I*deg2rad)*cos(0.5_RKIND*I*deg2rad)**2/0.37988_RKIND
-          tidalConstituentNodalPhase(j) = T - 3.0_RKIND*s + h + p + 90.0_RKIND + 2.0_RKIND*xi - nu 
+          tidalConstituentNodalPhase(j) = T - 3.0_RKIND*s + h + p + 90.0_RKIND + 2.0_RKIND*xi - nu
           tidalConstituentType(j) = 1
 
         else if (constituentList(j)%constituent == 'P1') then
           tidalConstituentAmplitude(j) = 0.046848_RKIND
           tidalConstituentFrequency(j) = 0.7252295e-4_RKIND
           tidalConstituentLoveNumbers(j) = 0.706_RKIND
-          tidalConstituentAstronomical(j) = 0.0_RKIND 
-          tidalConstituentNodalAmplitude(j) = 1.0_RKIND 
-          tidalConstituentNodalPhase(j) = T - h + 90.0_RKIND 
+          tidalConstituentAstronomical(j) = 0.0_RKIND
+          tidalConstituentNodalAmplitude(j) = 1.0_RKIND
+          tidalConstituentNodalPhase(j) = T - h + 90.0_RKIND
           tidalConstituentType(j) = 1
 
         else
@@ -664,11 +664,11 @@ contains
 !
 !  routine orbit
 !
-!> \brief   Computes orbital factors 
+!> \brief   Computes orbital factors
 !> \author  Steven Brus
 !> \date    September 2019
 !> \details
-!>  Computes factors related to the orbits of the sun and moon for 
+!>  Computes factors related to the orbits of the sun and moon for
 !>  calculating the nodal factors in the tidal potential.
 !>  Adapted from tide_fac.f which can be found here:
 !>  http://adcirc.org/home/related-software/adcirc-utility-programs/
@@ -690,7 +690,7 @@ contains
       real (kind = RKIND), intent(out) :: xi
       real (kind = RKIND), intent(out) :: nup
       real (kind = RKIND), intent(out) :: nup2
-      real (kind = RKIND), intent(out) :: pc 
+      real (kind = RKIND), intent(out) :: pc
 
       integer :: x
       real (kind=RKIND) :: yr,day,hr
@@ -748,12 +748,12 @@ contains
 
 !***********************************************************************
 !
-!  function adjust_angle 
+!  function adjust_angle
 !
 !> \brief   Puts angles into the 0-360 degree range
 !> \author  Steven Brus
 !> \date    September 2019
-!> \details 
+!> \details
 !
 !-----------------------------------------------------------------------
   function adjust_angle(arg) result(angle) !{{{
@@ -770,7 +770,7 @@ contains
       if (angle <  0.0_RKIND) then
         angle = angle + 360.0_RKIND
       end if
-  END
+  end function adjust_angle
 
 
 !***********************************************************************
