@@ -47,4 +47,12 @@
 		description="Flow velocity at river side."
 		possible_values="Any real number."
 		/>
+    <nml_option name="config_idealized_estuary_wind_stress_zonal" type="real" default_value="0.0" units="Pa"
+        description="Surface zonal wind stress."
+        possible_values="Any real number."
+        />
+    <nml_option name="config_idealized_estuary_wind_stress_meridional" type="real" default_value="0.0" units="Pa"
+        description="Surface meridional wind stress."
+        possible_values="Any real number."
+        />
 </nml_record>

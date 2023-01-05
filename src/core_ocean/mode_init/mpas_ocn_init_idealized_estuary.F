@@ -104,6 +104,7 @@ contains
     real (kind=RKIND), dimension(:), pointer :: yCell,refBottomDepth, refZMid, &
                                                 vertCoordMovementWeights, bottomDepth, &
                                                 fCell, fEdge, fVertex, dcEdge, areaCell
+    real (kind=RKIND), dimension(:), pointer :: windStressZonal, windStressMeridional
     real (kind=RKIND), dimension(:), pointer :: tidalInputFactor
     real (kind=RKIND), dimension(:,:), pointer :: layerThickness, restingThickness
     real (kind=RKIND), dimension(:,:), pointer :: boundaryLayerThicknessTendency
@@ -194,6 +195,8 @@ contains
 
        call mpas_pool_get_array(tracersPool, 'activeTracers', activeTracers, 1)
        call mpas_pool_get_array(statePool, 'layerThickness', layerThickness, 1)
+       call mpas_pool_get_array(forcingPool, 'windStressZonal', windStressZonal, 1)
+       call mpas_pool_get_array(forcingPool, 'windStressMeridional', windStressMeridional, 1)
 
        call mpas_pool_get_array(forcingPool, 'tidalInputFactor', tidalInputFactor)
        call mpas_pool_get_array(forcingPool, 'boundaryLayerThicknessTendency', boundaryLayerThicknessTendency)
@@ -224,6 +227,10 @@ contains
        vertCoordMovementWeights(:) = 1.0_RKIND
 
        do iCell = 1, nCellsSolve
+
+          ! Set surface forcing
+          windStressZonal(iCell) = config_idealized_estuary_wind_stress_zonal
+          windStressMeridional(iCell) = config_idealized_estuary_wind_stress_meridional
 
           ! Set temperature
           idx = index_temperature
