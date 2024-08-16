@@ -191,6 +191,9 @@ contains
       do iCell = 1, nCells
          vertViscTopOfCell(:, iCell) = 0.0_RKIND
          vertDiffTopOfCell(:, iCell) = 0.0_RKIND
+         ! gotm new output
+         NSquaredTopCell(:,iCell) = 0.0_RKIND
+         shearSquaredTopCell(:,iCell) = 0.0_RKIND
       end do
       !$omp end do
       !$omp end parallel
@@ -225,6 +228,8 @@ contains
                shearSquaredTop(k) = shearSquaredTop(k) + factor * delU2
             end do
             shearSquaredTop(k) = shearSquaredTop(k) / (zMid(ki-1,iCell) - zMid(ki,iCell))**2
+            ! gotm new output
+            shearSquaredTopCell(k,iCell) = shearSquaredTop(k)
          end do
          shearSquaredTop(0) = shearSquaredTop(1)
          shearSquaredTop(maxLevelCell(iCell)-minLevelCell(iCell)+1) = shearSquaredTop(maxLevelCell(iCell)-minLevelCell(iCell))
@@ -235,13 +240,18 @@ contains
          do k = 1, maxLevelCell(iCell) - minLevelCell(iCell) + 1
             ki = maxLevelCell(iCell) - k + 1
             NSquaredTop(k) = BruntVaisalaFreqTop(ki,iCell)
+            ! gotm new output
+            NSquaredTopCell(k,iCell) = NSquaredTop(k)
+
             hLayer(k) = layerThickness(ki,iCell)
             waterDepth = waterDepth + layerThickness(ki,iCell)
          end do
+         
 
          ! compute the bottom friction velocity
          bottomFrictionVelocity = sqrt(2.0_RKIND * gotmBottomDragCoef *  &
                                        kineticEnergyCell(maxLevelCell(iCell),iCell))
+
 
          ! fill GOTM arrays with current values at iCell
          do k = 0, maxLevelCell(iCell) - minLevelCell(iCell) + 1

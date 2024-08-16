@@ -190,6 +190,10 @@ module ocn_diagnostics_variables
    real (kind=RKIND), dimension(:), pointer :: eddyTime
    real (kind=RKIND), dimension(:), pointer :: c_visbeck
    real (kind=RKIND), dimension(:), pointer :: gmResolutionTaper
+   
+   ! gotm output new parameters
+   real (kind=RKIND), dimension(:,:), pointer :: NSquaredTopCell
+   real (kind=RKIND), dimension(:,:), pointer :: shearSquaredTopCell
 
    ! Semi-implicit Array Pointers
    real (kind=RKIND), dimension(:), pointer :: CGvec_r0,CGvec_r00,CGvec_r1 ,CGvec_rh0,CGvec_rh1,CGvec_ph0,CGvec_ph1
@@ -379,6 +383,10 @@ contains
       call mpas_pool_get_array(diagnosticsPool, 'bulkRichardsonNumberShear',bulkRichardsonNumberShear)
       call mpas_pool_get_array(diagnosticsPool, 'indexBoundaryLayerDepth',indexBoundaryLayerDepth)
       call mpas_pool_get_array(diagnosticsPool, 'edgeAreaFractionOfCell', edgeAreaFractionOfCell)
+
+      ! gotm new output
+      call mpas_pool_get_array(diagnosticsPool, 'NSquaredTopCell', NSquaredTopCell)
+      call mpas_pool_get_array(diagnosticsPool, 'shearSquaredTopCell', shearSquaredTopCell)
 
       call mpas_pool_get_array(diagnosticsPool, 'vertNonLocalFlux', vertNonLocalFlux)
       call mpas_pool_get_dimension(diagnosticsPool, 'index_vertNonLocalFluxTemp', index_vertNonLocalFluxTemp)
