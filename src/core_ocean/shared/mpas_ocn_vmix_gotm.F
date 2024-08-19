@@ -233,7 +233,7 @@ contains
          end do
          shearSquaredTop(0) = shearSquaredTop(1)
          shearSquaredTop(maxLevelCell(iCell)-minLevelCell(iCell)+1) = shearSquaredTop(maxLevelCell(iCell)-minLevelCell(iCell))
-
+         shearSquaredTopCell(maxLevelCell(iCell)-minLevelCell(iCell)+1,iCell) = shearSquaredTopCell(maxLevelCell(iCell)-minLevelCell(iCell),iCell)
          ! fill arrays of the squared buoyancy frequency and layer thickness
          ! and compute the water depth
          waterDepth = 0.0_RKIND

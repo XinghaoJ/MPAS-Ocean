@@ -177,6 +177,8 @@
 			<var name="CFLNumberGlobal"/>
 			<var name="vertDiffTopOfCell"/>
 			<var name="vertViscTopOfCell"/>
+			<var name="NSquaredTopCell"/>
+                        <var name="shearSquaredTopCell"/>
 			<var name="bulkRichardsonNumber"/>
 			<var name="boundaryLayerDepth"/>
 			<var name="columnIntegratedSpeed"/>

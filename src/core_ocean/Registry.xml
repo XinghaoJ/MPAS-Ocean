@@ -1660,6 +1660,8 @@
 			<var name="RiTopOfCell"/>
 			<var name="vertViscTopOfCell"/>
 			<var name="vertDiffTopOfCell"/>
+                        <var name="NSquaredTopCell"/>
+                        <var name="shearSquaredTopCell"/>
 		</stream>
 
 		<stream name="restart"
@@ -1856,6 +1858,8 @@
 			<var name="bulkRichardsonNumber"/>
 			<var name="vertAleTransportTop"/>
 			<var name="vertVelocityTop"/>
+			<var name="NSquaredTopCell"/>
+			<var name="shearSquaredTopCell"/>
 		</stream>
 
 		<stream name="real_world"
@@ -2789,6 +2793,14 @@
 			 description="vertical diffusion defined at the cell center (horizontally) and top (vertically)"
 			 packages="forwardMode;analysisMode"
 		/>
+		<var name="NSquaredTopCell" type="real" dimensions="nVertLevelsP1 nCells Time" units="s^{-2}"
+                         description="N squared defined at the cell center (horizontally) and top (vertically)"
+                         packages="forwardMode;analysisMode"
+		/>
+                <var name="shearSquaredTopCell" type="real" dimensions="nVertLevelsP1 nCells Time" units="s^{-2}"
+                         description="shear squared defined at the cell center (horizontally) and top (vertically)"
+                         packages="forwardMode;analysisMode"
+                />
 		<var name="bulkRichardsonNumber" type="real" dimensions="nVertLevels nCells Time" units="nondimensional"
 			 description="CVMix/KPP: bulk Richardson number"
 			 packages="forwardMode;analysisMode"
