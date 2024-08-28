@@ -1217,8 +1217,9 @@ contains
                   !$omp end do
                   !$omp end parallel
                endif ! compute budgets
-            end if ! not non-local with implicit mix
-            call mpas_timer_stop("non-local flux from KPP")
+               call mpas_timer_stop("non-local flux from KPP")
+             end if ! not non-local with implicit mix
+            !call mpas_timer_stop("non-local flux from KPP")
          end if ! KPP
 
          ! Compute tracer tendency due to production/destruction of
