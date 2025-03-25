@@ -122,7 +122,7 @@ contains
       real (kind=RKIND)::velocityzonal_grad
       integer :: iEdge,idx_midCell 
       real (kind=RKIND), dimension(:,:), pointer :: normalVelocity
-      real (kind=RKIND), parameter :: thermal_coe = 0.2, gravity_acc=9.8, rho_ref = 1000
+      real (kind=RKIND), parameter :: thermal_coe = 0.2, gravity_acc=9.8, rho_ref = 1025
       real (kind=RKIND) :: depth_0velocity
       integer:: idx_depth_0velocity
       real (kind=RKIND),dimension(:),pointer::angleEdge,yEdge
@@ -262,7 +262,16 @@ contains
            ! Set surface forcing
            sensibleHeatFlux(iCell) = config_mixed_layer_eddy_heat_flux
            evaporationFlux(iCell) = config_mixed_layer_eddy_evaporation_flux
-           windStressZonal(iCell) = max(config_mixed_layer_eddy_wind_stress_zonal*sin(pi*yCell(iCell)/(2*yMidGlobal))-0.03,0.0_RKIND)
+           if ( config_mixed_layer_eddy_two_fronts ) then
+                 windStressZonal(iCell) = config_mixed_layer_eddy_wind_stress_zonal-0.03 
+!                if(yCell(iCell)<=yMidGlobal) then
+!                       windStressZonal(iCell) = max(config_mixed_layer_eddy_wind_stress_zonal*sin(pi*yCell(iCell)/(yMidGlobal))-0.03,0.0_RKIND)
+!                else
+!                       windStressZonal(iCell) = max(-config_mixed_layer_eddy_wind_stress_zonal*sin(pi*yCell(iCell)/(yMidGlobal))-0.03,0.0_RKIND)
+!                end if
+           else
+                windStressZonal(iCell) = max(config_mixed_layer_eddy_wind_stress_zonal*sin(pi*yCell(iCell)/(2*yMidGlobal))-0.03,0.0_RKIND)
+           end if
            windStressMeridional(iCell) = config_mixed_layer_eddy_wind_stress_meridional
            
            ! Set layerThickness and restingThickness
@@ -310,28 +319,48 @@ contains
               do iCell = 1, nCellsSolve
                  ! Set temperature
                  idx = index_temperature
-                 do k = nVertLevels, idx_mixed_layer_base, -1
-                    temperature = config_mixed_layer_eddy_base_temperature &
-                                + config_mixed_layer_eddy_temperature_stratification_interior &
-                                * ( refZMid(k) + config_mixed_layer_eddy_mixed_layer_depth ) &
-                                + 0.5_RKIND * config_mixed_layer_eddy_temperature_front_width &
-                                * config_mixed_layer_eddy_temperature_horizontal_gradient &
-                                * ( tanh( 2.0_RKIND * (yCell(iCell) - y1Global) / &
-                                        config_mixed_layer_eddy_temperature_front_width ) &
-                                -   tanh( 2.0_RKIND * (yCell(iCell) - y2Global) / &
-                                        config_mixed_layer_eddy_temperature_front_width ) + 1.0_RKIND )
+!                 do k = nVertLevels, idx_mixed_layer_base, -1
+!                    temperature = config_mixed_layer_eddy_base_temperature &
+!                                + config_mixed_layer_eddy_temperature_stratification_interior &
+!                                * ( refZMid(k) + config_mixed_layer_eddy_mixed_layer_depth ) &
+!                                + 0.5_RKIND * config_mixed_layer_eddy_temperature_front_width &
+!                                * config_mixed_layer_eddy_temperature_horizontal_gradient &
+!                                * ( tanh( 2.0_RKIND * (yCell(iCell) - y1Global) / &
+!                                        config_mixed_layer_eddy_temperature_front_width ) &
+!                                -   tanh( 2.0_RKIND * (yCell(iCell) - y2Global) / &
+!                                        config_mixed_layer_eddy_temperature_front_width ) + 1.0_RKIND )
+!                    activeTracers(idx, k, iCell) = temperature
+!                 end do
+!                 do k = idx_mixed_layer_base-1, 1, -1
+!                    temperature = config_mixed_layer_eddy_base_temperature &
+!                                + config_mixed_layer_eddy_temperature_stratification_mixed_layer &
+!                                * ( refZMid(k) + config_mixed_layer_eddy_mixed_layer_depth ) &
+!                                + 0.5_RKIND * config_mixed_layer_eddy_temperature_front_width &
+!                                * config_mixed_layer_eddy_temperature_horizontal_gradient &
+!                                * ( tanh( 2.0_RKIND * (yCell(iCell) - y1Global) / &
+!                                        config_mixed_layer_eddy_temperature_front_width ) &
+!                                -   tanh( 2.0_RKIND * (yCell(iCell) - y2Global) / &
+!                                        config_mixed_layer_eddy_temperature_front_width ) + 1.0_RKIND )
+!                    activeTracers(idx, k, iCell) = temperature
+!                 end do
+                 do k = 1,idx_mixed_layer_base-6, 1
+                    temperature = 20+ 7.5e-5 &
+                                * ( refZMid(k) - refZMid(idx_mixed_layer_base-6) ) &
+                                +0.6_RKIND*(1-tanh((yCell(iCell)-y1Global)/10/1000)+tanh((yCell(iCell)-y2Global)/10/1000)+1)
                     activeTracers(idx, k, iCell) = temperature
                  end do
-                 do k = idx_mixed_layer_base-1, 1, -1
-                    temperature = config_mixed_layer_eddy_base_temperature &
-                                + config_mixed_layer_eddy_temperature_stratification_mixed_layer &
-                                * ( refZMid(k) + config_mixed_layer_eddy_mixed_layer_depth ) &
-                                + 0.5_RKIND * config_mixed_layer_eddy_temperature_front_width &
-                                * config_mixed_layer_eddy_temperature_horizontal_gradient &
-                                * ( tanh( 2.0_RKIND * (yCell(iCell) - y1Global) / &
-                                        config_mixed_layer_eddy_temperature_front_width ) &
-                                -   tanh( 2.0_RKIND * (yCell(iCell) - y2Global) / &
-                                        config_mixed_layer_eddy_temperature_front_width ) + 1.0_RKIND )
+                 do k = idx_mixed_layer_base-5, idx_mixed_layer_base+6, 1
+                    temperature = activeTracers(idx,k-1,iCell)+7.5e-5*(exp(0.18*(-refZMid(k)+refZMid(idx_mixed_layer_base-6 )))) &
+                                * ( refZMid(k) - refZMid(k-1) )
+                    activeTracers(idx, k, iCell) = temperature
+                 end do
+                 do k = idx_mixed_layer_base+7,idx_mixed_layer_base+12, 1
+                    temperature = activeTracers(idx,k-1,iCell)+2.5e-1*(exp(-0.14755*(-refZMid(k)+refZMid(idx_mixed_layer_base+6)))) &
+                                * ( refZMid(k) - refZMid(k-1))
+                    activeTracers(idx, k, iCell) = temperature
+                 end do
+                 do k = idx_mixed_layer_base+13,nVertLevels, 1
+                    temperature = activeTracers(idx,k-1,iCell)+7.5e-3*(refZMid(k) - refZMid(k-1))
                     activeTracers(idx, k, iCell) = temperature
                  end do
 
@@ -339,6 +368,38 @@ contains
                  idx = index_salinity
                  activeTracers(idx, :, iCell) = config_mixed_layer_eddy_salinity
               end do
+
+              do iCell = 1, nCellsSolve
+                 if (yCell(iCell)-yMidGlobal >= 0.0_RKIND  ) then
+                        idx_midCell = iCell
+                        exit
+                 end if
+              end do
+
+              do iCell = 1, nCellsSolve
+                 idx = index_temperature
+                 do k = idx_mixed_layer_base+7,idx_mixed_layer_base+12, 1
+                    activeTracers(idx, k, iCell) = activeTracers(idx,k,idx_midCell)
+                 end do
+                 do k = idx_mixed_layer_base+13,nVertLevels, 1
+                    activeTracers(idx, k, iCell) = activeTracers(idx,k,idx_midCell)
+                 end do
+              end do
+
+              ! Add thermal wind balance
+              ! impose initial zonal velocity
+              do k = nVertLevels, idx_depth_0velocity, -1
+                 do iEdge = 1, nEdgesSolve
+                      normalVelocity(k,iEdge) = 0
+                 end do
+              end do
+              do k = idx_depth_0velocity, 1, -1
+                 do iEdge = 1, nEdgesSolve
+                      velocityzonal_grad = thermal_coe*gravity_acc/rho_ref/config_mixed_layer_eddy_coriolis_parameter*((0.6/10/1000*(1-tanh((yEdge(iEdge)-y1Global)/10/1000)**2))-(0.6/10/1000*(1-tanh((yEdge(iEdge)-y2Global)/10/1000)**2)))
+                      normalVelocity(k,iEdge) = velocityzonal_grad*(refZMid(k)-refZmid(idx_depth_0velocity))*cos(angleEdge(iEdge))
+                 end do
+              end do
+
            else ! single front
               ! Loop over cells
               do iCell = 1, nCellsSolve
@@ -399,11 +460,12 @@ contains
 !                 end if
               end do
               do iCell = 1, nCellsSolve
-                 if (yCell(iCell)-yMidGlobal >= 0.0_RKIND  ) then
+                 if (yCell(iCell)-yMaxGlobal >= 0.0_RKIND  ) then
                         idx_midCell = iCell
+                        exit
                  end if
               end do
-
+              
               do iCell = 1, nCellsSolve
                  idx = index_temperature
                  do k = idx_mixed_layer_base+13,idx_mixed_layer_base+25, 1

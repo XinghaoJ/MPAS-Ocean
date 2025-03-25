@@ -324,7 +324,7 @@ contains
       real (kind=RKIND), dimension(:), intent(out) :: interfaceLocations
 
       real (kind=RKIND) :: maxInterfaceLocation
-      integer :: nInterfaces, iInterface
+      integer :: nInterfaces, iInterface,i
 
       nInterfaces = size(interfaceLocations, dim=1)
 
@@ -434,7 +434,10 @@ contains
       interfaceLocations( 99) =  0.5564E+04_RKIND
       interfaceLocations(100) =  0.5779E+04_RKIND
       interfaceLocations(101) =  0.6000E+04_RKIND
-
+     ! Cover interface with Boundary layer grid finer 
+      do i=1,101
+        interfaceLocations(i) = 121.57*(exp(0.0163*i)-1)
+      END do
       maxInterfaceLocation = maxval(interfaceLocations)
 
       interfaceLocations(:) = interfaceLocations(:) / maxInterfaceLocation
