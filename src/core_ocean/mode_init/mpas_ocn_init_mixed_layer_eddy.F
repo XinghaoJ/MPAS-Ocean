@@ -405,23 +405,23 @@ contains
               do iCell = 1, nCellsSolve
                  ! Set temperature
                  idx = index_temperature
-                 do k = 1,idx_mixed_layer_base-10, 1
+                 do k = 1,idx_mixed_layer_base-6, 1
                     temperature = 20+ 7.5e-5 &
-                                * ( refZMid(k) - refZMid(idx_mixed_layer_base-10) ) &
+                                * ( refZMid(k) - refZMid(idx_mixed_layer_base-6) ) &
                                 + 0.6_RKIND*(1-tanh((yCell(iCell)-yMidGlobal)/10/1000))
                     activeTracers(idx, k, iCell) = temperature
                  end do
-                 do k = idx_mixed_layer_base-10, idx_mixed_layer_base+12, 1
-                    temperature = activeTracers(idx,k-1,iCell)+7.5e-5*(exp(0.18*(-refZMid(k)+refZMid(idx_mixed_layer_base-10 )))) &
+                 do k = idx_mixed_layer_base-5, idx_mixed_layer_base+6, 1
+                    temperature =activeTracers(idx,k-1,iCell)+7.5e-5*(exp(0.18*(-refZMid(k)+refZMid(idx_mixed_layer_base-6 )))) &
                                 * ( refZMid(k) - refZMid(k-1) ) 
                     activeTracers(idx, k, iCell) = temperature
                  end do
-                 do k = idx_mixed_layer_base+13,idx_mixed_layer_base+25, 1
-                    temperature = activeTracers(idx,k-1,iCell)+2.5e-1*(exp(-0.14755*(-refZMid(k)+refZMid(idx_mixed_layer_base+12)))) &
+                 do k = idx_mixed_layer_base+7,idx_mixed_layer_base+12, 1
+                    temperature =activeTracers(idx,k-1,iCell)+2.5e-1*(exp(-0.14755*(-refZMid(k)+refZMid(idx_mixed_layer_base+06))))&
                                 * ( refZMid(k) - refZMid(k-1)) 
                     activeTracers(idx, k, iCell) = temperature
                  end do
-                 do k = idx_mixed_layer_base+26,nVertLevels, 1
+                 do k = idx_mixed_layer_base+13,nVertLevels, 1
                     temperature = activeTracers(idx,k-1,iCell)+7.5e-3*(refZMid(k) - refZMid(k-1))
                     activeTracers(idx, k, iCell) = temperature
                  end do
@@ -468,10 +468,10 @@ contains
               
               do iCell = 1, nCellsSolve
                  idx = index_temperature
-                 do k = idx_mixed_layer_base+13,idx_mixed_layer_base+25, 1
+                 do k = idx_mixed_layer_base+7,idx_mixed_layer_base+12, 1
                     activeTracers(idx, k, iCell) = activeTracers(idx,k,idx_midCell)
                  end do
-                 do k = idx_mixed_layer_base+26,nVertLevels, 1
+                 do k = idx_mixed_layer_base+13, nVertLevels, 1
                     activeTracers(idx, k, iCell) = activeTracers(idx,k,idx_midCell)
                  end do
               end do
