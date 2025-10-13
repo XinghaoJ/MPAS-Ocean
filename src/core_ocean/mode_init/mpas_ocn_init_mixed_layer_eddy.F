@@ -128,7 +128,8 @@ contains
       real (kind=RKIND),dimension(:),pointer::angleEdge,yEdge
 
       real(8), parameter :: pi = 3.14159265358979323846d0
-
+      integer :: seed_size
+      integer, allocatable :: seed(:)
       iErr = 0
 
       if(config_init_configuration .ne. trim('mixed_layer_eddy')) return
@@ -498,8 +499,16 @@ contains
            ! Add random perturbation to initial temperature
            idx = index_temperature
 
+                 ! Get the size of the seed
+           call random_seed(size=seed_size)
+
+        ! Allocate the seed array based on the required size
+           allocate(seed(seed_size))
+
+        ! Set a fixed seed for reproducibility
+           seed = 876 ! Initialize the seed array with a fixed value
            ! Initialize random number generator
-           call random_seed()
+           call random_seed(put=seed)
 
            ! Loop over cells
            do iCell = 1, nCellsSolve
@@ -507,6 +516,9 @@ contains
               call random_number(randomPerturbation)
               ! [0,1) to [-1,1)
               randomPerturbation = 2.0_RKIND * randomPerturbation - 1.0_RKIND
+
+            !  print *, randomPerturbation
+
               ! Add random perturbation, constant in z
               activeTracers(idx, :, iCell) = activeTracers(idx, :, iCell) &
                              + config_mixed_layer_eddy_temperature_perturbation_magnitude &
