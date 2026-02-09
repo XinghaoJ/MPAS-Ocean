@@ -671,8 +671,8 @@ contains
             indexBoundaryLayerDepth(iCell) = cvmix_variables % kOBL_depth
 
             do k = minLevelCell(iCell), maxLevelCell(iCell) + 1
-                vertViscTopOfCell(k, iCell) = 1.0*cvmix_variables % Mdiff_iface(k)
-                vertDiffTopOfCell(k, iCell) = 1.0*cvmix_variables % Tdiff_iface(k)
+                vertViscTopOfCell(k, iCell) = config_cvmix_kpp_enhancement_factor_alpha*cvmix_variables % Mdiff_iface(k)
+                vertDiffTopOfCell(k, iCell) = config_cvmix_kpp_enhancement_factor_alpha*cvmix_variables % Tdiff_iface(k)
             end do
 
             ! store non-local flux terms

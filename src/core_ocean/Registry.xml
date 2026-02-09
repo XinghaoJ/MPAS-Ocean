@@ -574,6 +574,10 @@
 					description="Option of Langmuir enhanced entrainment parameterization"
 					possible_values="NONE, LWF16, LF17, RWHGK16"
 		/>
+                <nml_option name="config_cvmix_kpp_enhancement_factor_alpha" type="real" default_value="1.0" units="non_dimensional"
+                                        description="A enhancement factor for A-KPP"
+                                        possible_values="Any positive value"
+                />
 	</nml_record>
 	<nml_record name="gotm" mode="forward">
 		<nml_option name="config_use_gotm" type="logical" default_value=".false." units="NA"

@@ -71,4 +71,8 @@
 			description="Coriolis parameter for entrie domain."
 			possible_values="Any real number."
 		/>
+                <nml_option name="config_mixed_layer_eddy_temp_pert_seed" type="integer" default_value="12345" units="unitless"
+                        description="random perturbation seed."
+                        possible_values="Any integer number."
+                />
 	</nml_record>
